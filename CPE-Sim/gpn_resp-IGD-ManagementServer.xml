@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                  xmlns:cwmp="urn:dslforum-org:cwmp-1-0">
+  <soapenv:Header>
+  </soapenv:Header>
+  <soapenv:Body>
+    <cwmp:GetParameterNamesResponse>
+      <ParameterList soapenc:arrayType="cwmp:ParameterInfoStruct[3]">
+        <ParameterInfoStruct>
+          <Name>InternetGatewayDevice.ManagementServer.URL</Name>
+          <Writable>1</Writable>
+        </ParameterInfoStruct>
+        <ParameterInfoStruct>
+          <Name>InternetGatewayDevice.ManagementServer.Username</Name>
+          <Writable>1</Writable>
+        </ParameterInfoStruct>
+        <ParameterInfoStruct>
+          <Name>InternetGatewayDevice.ManagementServer.ParameterKey</Name>
+          <Writable>1</Writable>
+        </ParameterInfoStruct>
+      </ParameterList>
+    </cwmp:GetParameterNamesResponse>
+  </soapenv:Body>
+</soapenv:Envelope>

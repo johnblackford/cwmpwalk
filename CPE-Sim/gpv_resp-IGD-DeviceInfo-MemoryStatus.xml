@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+                  xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                  xmlns:cwmp="urn:dslforum-org:cwmp-1-0">
+  <soapenv:Header>
+  </soapenv:Header>
+  <soapenv:Body>
+    <cwmp:GetParameterValuesResponse>
+      <ParameterList soapenc:arrayType="cwmp:ParameterValueStruct[2]">
+        <ParameterValueStruct>
+          <Name>InternetGatewayDevice.DeviceInfo.MemoryStatus.Total</Name>
+          <Value xsi:type="xsd:unsignedInt">1024</Value>
+        </ParameterValueStruct>
+        <ParameterValueStruct>
+          <Name>InternetGatewayDevice.DeviceInfo.MemoryStatus.Free</Name>
+          <Value xsi:type="xsd:unsignedInt">256</Value>
+        </ParameterValueStruct>
+      </ParameterList>
+    </cwmp:GetParameterValuesResponse>
+  </soapenv:Body>
+</soapenv:Envelope>
