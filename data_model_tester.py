@@ -16,9 +16,13 @@
 """
 
 
+import sys
+sys.path.append("../report-tool")
+
 import logging
 
 from cwmpwalk import CWMPWalk
+from nodes import Document
 
 
 
@@ -54,6 +58,8 @@ if __name__ == "__main__":
     logging.basicConfig(filename="logs/cwmp-testing.log",
                         format='%(asctime)-15s %(name)s %(levelname)-8s %(message)s')
     logging.getLogger().setLevel(logging.INFO)
+
+    myDoc = Document()
 
     tester = DataModelSanityTester()
     tester.test()
