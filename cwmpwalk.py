@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """
 # File Name: cwmpwalk.py
@@ -26,13 +26,14 @@
 """
 
 
+import io
 import logging
 import xmltodict
-import cStringIO
 import sys, getopt
 import subprocess
+import socket
 
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
 # Global Constants
@@ -60,13 +61,13 @@ class CWMPWalk(object):
 
     def print_results(self):
         """Print out the implemented data model, as built out during the walk"""
-        print "Testing..."
-        print ""
-        print "The Implemented Data Modle is:"
+        print("Testing...")
+        print("")
+        print("The Implemented Data Modle is:")
         for data_model_obj in self.implemented_data_model:
-            print "{}".format(data_model_obj.get_name())
+            print("{}".format(data_model_obj.get_name()))
             for data_model_param in data_model_obj.get_parameters():
-                print "- {} = {}".format(data_model_param.get_name(), data_model_param.get_value())
+                print("- {} = {}".format(data_model_param.get_name(), data_model_param.get_value()))
 
 
     def get_implemented_data_model(self):
@@ -96,9 +97,9 @@ class CWMPServer(object):
         logger = logging.getLogger(self.__class__.__name__)
 
         logger.info(starting_msg)
-        print starting_msg
+        print(starting_msg)
 
-        print "Waiting for CWMP Inform..."
+        print("Waiting for CWMP Inform...")
         self.http_server.serve_forever()
 
 
@@ -536,7 +537,7 @@ class CWMPHandler(BaseHTTPRequestHandler):
 
     def _get_parameter_names(self, a_data_model_obj):
         """Send a GetParameterNames RPC to the CPE"""
-        out_buffer = cStringIO.StringIO()
+        out_buffer = io.StringIO()
         logger = logging.getLogger(self.__class__.__name__)
 
         # Build CWMP Request
@@ -557,7 +558,7 @@ class CWMPHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "application/xml")
         self.end_headers()
-        self.wfile.write(out_buffer.getvalue())
+        self.wfile.write(bytes(out_buffer.getvalue(), "utf-8"))
 
         logger.info("Sending a CWMP GetParameterNames for: [{}]".format(a_data_model_obj.get_name()))
         self._write_outgoing_cwmp_message(out_buffer.getvalue())
@@ -570,7 +571,7 @@ class CWMPHandler(BaseHTTPRequestHandler):
         """Send a GetParameterValues RPC to the CPE"""
         param_names = ""
         first_param = True
-        out_buffer = cStringIO.StringIO()
+        out_buffer = io.StringIO()
         logger = logging.getLogger(self.__class__.__name__)
 
         # Build CWMP Request
@@ -605,7 +606,7 @@ class CWMPHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "application/xml")
         self.end_headers()
-        self.wfile.write(out_buffer.getvalue())
+        self.wfile.write(bytes(out_buffer.getvalue(), "utf-8"))
 
         logger.info("Sending a CWMP GetParameterValues for: [{}]".format(param_names))
         self._write_outgoing_cwmp_message(out_buffer.getvalue())
@@ -617,7 +618,7 @@ class CWMPHandler(BaseHTTPRequestHandler):
     def _send_inform_response(self, soap_header):
         """Send an InformResponse back"""
         cwmp_id = None
-        out_buffer = cStringIO.StringIO()
+        out_buffer = io.StringIO()
         logger = logging.getLogger(self.__class__.__name__)
 
         if "cwmp:ID" in soap_header:
@@ -647,7 +648,7 @@ class CWMPHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "application/xml")
         self.end_headers()
-        self.wfile.write(out_buffer.getvalue())
+        self.wfile.write(bytes(out_buffer.getvalue(), "utf-8"))
 
         logger.info("Sending a CWMP InformResponse")
         self._write_outgoing_cwmp_message(out_buffer.getvalue())
@@ -667,7 +668,7 @@ class CWMPHandler(BaseHTTPRequestHandler):
         self.send_response(204)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
-        self.wfile.write("")
+        self.wfile.write(bytes("", "utf-8"))
 
         logger.info("Terminating the CWMP Session with an HTTP 204")
         self._write_outgoing_cwmp_message("<EMPTY>")
@@ -784,29 +785,29 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hi:p:", "intf, port")
     except getopt.GetoptError:
-        print "Error Encountered:"
+        print("Error Encountered:")
         logging.error("Error Encountered:")
-        print " - Unknown command line argument encountered"
+        print(" - Unknown command line argument encountered")
         logging.error(" - Unknown command line argument encountered")
-        print ""
-        print usage_str
+        print("")
+        print(usage_str)
         sys.exit(2)
 
 
     # Process the input arguments
     for opt, arg in opts:
         if opt in ('-h', "--help"):
-            print usage_str
-            print "  -i|--intf     :: System Interface (e.g. 'en0') to run the CWMP ACS on"
-            print "  -p|--port     :: Port to run the CWMP ACS on"
-            print "  -V|--version  :: Print the version of the tool"
+            print(usage_str)
+            print("  -i|--intf     :: System Interface (e.g. 'en0') to run the CWMP ACS on")
+            print("  -p|--port     :: Port to run the CWMP ACS on")
+            print("  -V|--version  :: Print the version of the tool")
             sys.exit()
         elif opt in ("-i", "--intf"):
             interface = arg
         elif opt in ("-p", "--port"):
             port = int(arg)
         elif opt in ("-V", "--version"):
-            print "Report Tool :: version={}".format(_VERSION)
+            print("Report Tool :: version={}".format(_VERSION))
             sys.exit()
 
 
@@ -817,14 +818,12 @@ def main(argv):
 
 
 def _get_ip_address(netdev='en0'):
-    """Retrieve the IP Address via a unix 'ifconfig' command"""
-    arg='ifconfig ' + netdev
-    p=subprocess.Popen(arg, shell=True, stdout=subprocess.PIPE)
-    data = p.communicate()
-    sdata = data[0].split('\n')
-    ipaddr = sdata[3].strip().split(' ')[1].split('/')[0]
-    return ipaddr
+    """Retrieve the IP Address"""
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        s.connect(("gmail.com",80))
+        addr = s.getsockname()[0]
 
+    return addr
 
 
 

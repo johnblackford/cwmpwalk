@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """
 # File Name: data_model_tester.py
@@ -43,13 +43,13 @@ class DataModelSanityTester(object):
         # Retreive the implemented data model from the CWMPWalk instance
         self.implemented_data_model = self.cwmp_walker.get_implemented_data_model()
 
-        print "Testing..."
-        print ""
-        print "The Implemented Data Model is:"
+        print("Testing...")
+        print("")
+        print("The Implemented Data Model is:")
         for data_model_obj in self.implemented_data_model:
-            print "{}".format(data_model_obj.get_name())
+            print("{}".format(data_model_obj.get_name()))
             for data_model_param in data_model_obj.get_parameters():
-                print "- {} = {}".format(data_model_param.get_name(), data_model_param.get_value())
+                print("- {} = {}".format(data_model_param.get_name(), data_model_param.get_value()))
 
 
 
